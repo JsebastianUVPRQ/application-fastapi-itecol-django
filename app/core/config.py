@@ -24,7 +24,8 @@ class Settings(BaseSettings):
     # Rate Limits
     RATE_LIMITS: dict = {
         "auth": "10/minute",
-        "api": "100/minute"
+        "api": "100/minute",
+        "grades": "30/minute"
     }
     
     # Email
