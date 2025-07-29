@@ -1,29 +1,50 @@
+version: '3.8'
 
 services:
-  api:
+  app:
     build: .
+    ports:
+      - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql://user:pass@db/main_db
-      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=postgresql://school_user:school_password@db:5432/school_db
+      - SECRET_KEY=your-secret-key-here
+      - ALGORITHM=HS256
+      - ACCESS_TOKEN_EXPIRE_MINUTES=30
     depends_on:
       - db
-      - redis
+    volumes:
+      - .:/app
+    networks:
+      - school-network
 
   db:
-    image: postgres:14
+    image: postgres:15
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
+      - POSTGRES_DB=school_db
+      - POSTGRES_USER=school_user
+      - POSTGRES_PASSWORD=school_password
+    ports:
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - school-network
 
-  redis:
-    image: redis:7
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@school.com
+      - PGADMIN_DEFAULT_PASSWORD=admin123
     ports:
-      - "679:6379"
-    volumes:
-      - redis_data:/data
+      - "5050:80"
+    depends_on:
+      - db
+    networks:
+      - school-network
 
 volumes:
   postgres_data:
-  redis_data:
+
+networks:
+  school-network:
+    driver: bridge 

@@ -1,45 +1,34 @@
 from pydantic_settings import BaseSettings
-from functools import lru_cache
+from typing import Optional
+import os
 
 class Settings(BaseSettings):
-    # Base
-    ENVIRONMENT: str = "dev"
-    DEBUG: bool = False
-    PROJECT_NAME: str = "School Management System"
-    VERSION: str = "1.0.0"
+    # Configuración de la aplicación
+    app_name: str = "Sistema de Gestión Escolar"
+    debug: bool = True
+    environment: str = "development"
     
-    # Database
-    DATABASE_URL: str
-    TEST_DATABASE_URL: str = "postgresql+asyncpg://test:test@localhost/test_db"
+    # Configuración de la base de datos
+    database_url: str = "postgresql://school_user:school_password@localhost:5432/school_db"
     
-    # Security
-    SECRET_KEY: str
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440
-    CORS_ORIGINS: list[str] = ["*"]
+    # Configuración de seguridad
+    secret_key: str = "your-secret-key-here-change-in-production"
+    algorithm: str = "HS256"
+    access_token_expire_minutes: int = 30
     
-    # Redis
-    REDIS_URL: str = "redis://localhost:6379"
-    CACHE_TTL: int = 300  # 5 minutos
+    # Configuración de logs
+    log_level: str = "INFO"
+    log_file: str = "logs/app.log"
     
-    # Rate Limits
-    RATE_LIMITS: dict = {
-        "auth": "10/minute",
-        "api": "100/minute",
-        "grades": "30/minute"
-    }
+    # Configuración de email (opcional)
+    smtp_tls: bool = True
+    smtp_port: int = 587
+    smtp_host: Optional[str] = None
+    smtp_user: Optional[str] = None
+    smtp_password: Optional[str] = None
     
-    # Email
-    SMTP_SERVER: str = "smtp.example.com"
-    SMTP_PORT: int = 587
-    SMTP_USER: str = "user"
-    SMTP_PASSWORD: str = "password"
-
     class Config:
         env_file = ".env"
-        case_sensitive = True
+        case_sensitive = False
 
-@lru_cache
-def get_settings():
-    return Settings()
-
-settings = get_settings()
+settings = Settings() 
